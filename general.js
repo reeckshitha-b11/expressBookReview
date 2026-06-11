@@ -2,58 +2,76 @@ const axios = require("axios");
 
 const BASE_URL = "http://localhost:5000";
 
-// -----------------------------
-// 1. Get All Books
-// -----------------------------
+// --------------------
+// Get all books
+// --------------------
 async function getAllBooks() {
-    try {
-        const response = await axios.get(`${BASE_URL}/books`);
-        console.log("All Books:", response.data);
-    } catch (error) {
-        console.error("Error fetching all books:", error.message);
-    }
+  try {
+    const res = await axios.get(`${BASE_URL}/books`);
+    return res.data;
+  } catch (err) {
+    console.error("Error fetching all books:", err.message);
+    return [];
+  }
 }
 
-// -----------------------------
-// 2. Get Book by ISBN
-// -----------------------------
+// --------------------
+// Get books by ISBN
+// --------------------
 async function getBookByISBN(isbn) {
-    try {
-        const response = await axios.get(`${BASE_URL}/books/${isbn}`);
-        console.log("Book by ISBN:", response.data);
-    } catch (error) {
-        console.error("Error fetching book by ISBN:", error.message);
+  try {
+    const res = await axios.get(`${BASE_URL}/books/${isbn}`);
+    if (!res.data) {
+      console.log("Book not found");
+      return null;
     }
+    return res.data;
+  } catch (err) {
+    console.error("Error fetching book by ISBN:", err.message);
+    return null;
+  }
 }
 
-// -----------------------------
-// 3. Get Books by Author
-// -----------------------------
+// --------------------
+// Get books by Author
+// --------------------
 async function getBooksByAuthor(author) {
-    try {
-        const response = await axios.get(`${BASE_URL}/books?author=${author}`);
-        console.log("Books by Author:", response.data);
-    } catch (error) {
-        console.error("Error fetching books by author:", error.message);
-    }
+  try {
+    const res = await axios.get(`${BASE_URL}/books`);
+    const filtered = res.data.filter(
+      (book) => book.author.toLowerCase() === author.toLowerCase()
+    );
+
+    return filtered.length ? filtered : [];
+  } catch (err) {
+    console.error("Error fetching books by author:", err.message);
+    return [];
+  }
 }
 
-// -----------------------------
-// 4. Get Books by Title
-// -----------------------------
+// --------------------
+// Get books by Title
+// --------------------
 async function getBooksByTitle(title) {
-    try {
-        const response = await axios.get(`${BASE_URL}/books?title=${title}`);
-        console.log("Books by Title:", response.data);
-    } catch (error) {
-        console.error("Error fetching books by title:", error.message);
-    }
+  try {
+    const res = await axios.get(`${BASE_URL}/books`);
+    const filtered = res.data.filter(
+      (book) => book.title.toLowerCase().includes(title.toLowerCase())
+    );
+
+    return filtered.length ? filtered : [];
+  } catch (err) {
+    console.error("Error fetching books by title:", err.message);
+    return [];
+  }
 }
 
-// -----------------------------
-// Example Calls (You can remove before submission if needed)
-// -----------------------------
-getAllBooks();
-getBookByISBN("978-0-123456-47-2");
-getBooksByAuthor("J.K. Rowling");
-getBooksByTitle("Harry Potter");
+// --------------------
+// Test calls
+// --------------------
+(async () => {
+  console.log(await getAllBooks());
+  console.log(await getBookByISBN("978-0-123456-47-2"));
+  console.log(await getBooksByAuthor("J.K. Rowling"));
+  console.log(await getBooksByTitle("Harry Potter"));
+})();
